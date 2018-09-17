@@ -75,6 +75,54 @@ app.get("/api/account", function(req, res) {
       });
 });
 
+/*Retrive Based On ID*/
+app.get("/api/contact/id", function(req, res) {
+  var query = "SELECT * FROM salesforce.contact WHERE id=3";
+  db.any(query)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.send(error);
+    });
+});
+app.get("/api/account/id", function(req, res) {
+  var query = "SELECT * FROM salesforce.account WHERE id=4";
+  db.any(query)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(error) {  
+      console.log(error);
+      res.send(error);
+    });
+});
+
+/*Delete Query*/ 
+app.delete("/api/account/id", function(req, res) {
+  var query = "SELECT * FROM salesforce.account WHERE id=4";
+  db.any(query)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.send(error);
+    });
+});
+app.delete("/api/contact/id", function(req, res) {
+  var query = "SELECT * FROM salesforce.contact WHERE id=3";
+  db.any(query)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.send(error);
+    });
+});
+
 //Format of TOKEN
 // Authorization: Bearer <access_token>
 
