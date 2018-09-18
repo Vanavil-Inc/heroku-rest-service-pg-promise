@@ -256,12 +256,13 @@ app.put("/api/account/:id", verifyToken, (req, res) => {
         console.log(req.body);
         const name = req.body.name;
         const phone = req.body.phone;
-        const salutation = req.body.salutation;
-        const title = req.body.title;
-        console.log(name, phone, salutation, title);
+        const fax = req.body.fax;
+        const sicdesc = req.body.sicdesc;
+        const description = req.body.description;
+        console.log(name, phone, fax, sicdesc, description);
         db.none(
-          "update salesforce.account set name=$1, phone=$2, salutation=$3, title=$4 where id=$5",
-          [name, phone, salutation, title, parseInt(req.params.id)]
+          "update salesforce.account set name=$1, phone=$2, fax=$3, title=$4, description=$5 where id=$5",
+          [name, phone, fax, sicdesc, description, parseInt(req.params.id)]
         )
           .then(data => {
             res.status(200).json({
