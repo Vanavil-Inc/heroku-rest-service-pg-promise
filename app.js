@@ -186,13 +186,13 @@ app.post('/api/account', verifyToken, (req, res) => {
       console.log(req.body);
       const name = req.body.name;
       const phone = req.body.phone;
-      const salutation = req.body.salutation;
-      const title = req.body.title;
-      const createdbyid = req.body.createdbyid;
-      console.log(name, phone, salutation, title, createdbyid);
+      const fax = req.body.fax;
+      const sfid = req.body.sfid;
+      const description = req.body.description;
+      console.log(name, phone, fax, sfid, description);
       db.one(
-        "INSERT INTO salesforce.account(name, phone, salutation, title, createdbyid) VALUES($1, $2,$3, $4,$5) RETURNING id",
-        [name, phone, salutation, title, createdbyid]
+        "INSERT INTO salesforce.account(name, phone, fax, sfid, description) VALUES($1, $2,$3, $4,$5) RETURNING id",
+        [name, phone, fax, sfid, description]
       )
         .then(data => {
           console.log(data);
