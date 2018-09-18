@@ -340,6 +340,25 @@ app.get("/api/recentTrigger", verifyToken, (req, res) => {
  });
 });
 
+app.get("/api/ctrigger", verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+        res.sendStatus(403);
+    } else {
+  var query = "SELECT * FROM salesforce._trigger_log WHERE created_at > CURRENT_TIMESTAMP - INTERVAL '30 minutes' ";
+  db.any(query)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.send(error);
+    });
+  }
+ });
+});
+
 //Format of TOKEN
 // Authorization: Bearer <access_token>
 
