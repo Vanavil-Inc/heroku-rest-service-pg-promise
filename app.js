@@ -187,12 +187,12 @@ app.post('/api/account', verifyToken, (req, res) => {
       const name = req.body.name;
       const phone = req.body.phone;
       const fax = req.body.fax;
-      const sfid = req.body.sfid;
+      const sicdesc = req.body.sicdesc;
       const description = req.body.description;
-      console.log(name, phone, fax, sfid, description);
+      console.log(name, phone, fax, sicdesc, description);
       db.one(
-        "INSERT INTO salesforce.account(name, phone, fax, sfid, description) VALUES($1, $2,$3, $4,$5) RETURNING id",
-        [name, phone, fax, sfid, description]
+        "INSERT INTO salesforce.account(name, phone, fax, sicdesc, description) VALUES($1, $2,$3, $4,$5) RETURNING id",
+        [name, phone, fax, sicdesc, description]
       )
         .then(data => {
           console.log(data);
