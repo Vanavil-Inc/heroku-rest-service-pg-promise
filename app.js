@@ -360,7 +360,12 @@ app.get("/api/ctTrigger", verifyToken, (req, res) => {
 });
 
 //URL:: /api/logs/5000(milli seconds)/2 9number of times)
-app.get("/api/logs/:timer/:times", function(req, res) {
+app.get("/api/logs/:timer/:times", verifyToken,(req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+        res.sendStatus(403);
+    } else {
   var timer = req.params.timer;
   var times = parseInt(req.params.times);
   var counter = 0;
@@ -386,6 +391,8 @@ app.get("/api/logs/:timer/:times", function(req, res) {
       res.end();
     }
   }, parseInt(req.params.timer));
+}
+});
 });
 
 //Format of TOKEN
