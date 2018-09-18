@@ -219,6 +219,7 @@ app.get("/api/account/:id", function(req, res) {
       res.send(error.message);
     });
 });
+
 app.put("/api/account/:id", function(req, res) {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
