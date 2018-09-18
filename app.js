@@ -25,8 +25,6 @@ app.post('/api/contact', verifyToken, (req, res) => {
       });
     }
   });
-
-  
 });
 
 app.post('/api/login', (req, res) => {
@@ -60,6 +58,20 @@ app.get("/api/contact", function(req, res) {
     .catch(function(error) {
       console.log(error);
       res.send(error);
+    });
+});
+
+app.get("/api/contact/:firstName", function(req, res) {
+  var firstName = req.params.firstName;
+  console.log(firstName);
+  db.one("SELECT * FROM salesforce.contact WHERE firstname = $1", firstName)
+    .then(user => {
+      console.log(user);
+      res.send(user);
+    })
+    .catch(error => {
+      console.log(error);
+      res.send(error.message);
     });
 });
 
