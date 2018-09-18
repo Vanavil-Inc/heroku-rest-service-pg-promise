@@ -359,6 +359,35 @@ app.get("/api/ctTrigger", verifyToken, (req, res) => {
  });
 });
 
+//URL:: /api/logs/5000(milli seconds)/2 9number of times)
+app.get("/api/logs/:timer/:times", function(req, res) {
+  var timer = req.params.timer;
+  var times = parseInt(req.params.times);
+  var counter = 0;
+  console.log(timer, times);
+  res.setHeader("Content-Type", "text/html");
+
+  console.log(counter, times);
+
+  setInterval(function() {
+    if (counter < times) {
+      //var query = "SELECT * from salesforce." + tableName;
+      var query = "SELECT * FROM salesforce._trigger_log WHERE created_at > CURRENT_TIMESTAMP - INTERVAL '30 minutes' ";
+  
+      db.any(query).then(function(data) {
+        res.write(
+          "\n************************************************************************************\n"
+        );
+        console.log("**********************************************");
+        res.write(JSON.stringify(data));
+        counter++;
+      });
+    } else {
+      res.end();
+    }
+  }, parseInt(req.params.timer));
+});
+
 //Format of TOKEN
 // Authorization: Bearer <access_token>
 
@@ -388,6 +417,8 @@ function verifyToken (req, res, next) {
   }
 
 }
+
+
 
 var server = app.listen(process.env.PORT || 8081, function() {
   var host = server.address().address;
