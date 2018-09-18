@@ -340,7 +340,7 @@ app.get("/api/recentTrigger", verifyToken, (req, res) => {
  });
 });
 
-app.get("/api/ctrigger", verifyToken, (req, res) => {
+app.get("/api/ctTrigger", verifyToken, (req, res) => {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
     if (err) {
