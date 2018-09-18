@@ -6,9 +6,9 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 var expressValidator = require("express-validator");
-var expressSession = require("express-session");
+// var expressSession = require("express-session");
 app.use(expressValidator());
-app.use(expressSession());
+// app.use(expressSession());
 
 
 var cn =
@@ -64,15 +64,11 @@ app.post('/api/login', (req, res) => {
     username:'thanga',
     email:'thanga@gmail.com'
   }
-
   jwt.sign({user}, 'secretkey', { expiresIn: '2d' }, (err, token) => {
-
     res.json({
       token
     });
-
   });
-  
 });
 
 app.get("/", function(req, res) {
@@ -91,10 +87,10 @@ app.get("/api/contact", function(req, res) {
     });
 });
 
-app.get("/api/contact/:firstName", function(req, res) {
-  var firstName = req.params.firstName;
-  console.log(firstName);
-  db.one("SELECT * FROM salesforce.contact WHERE firstname = $1", firstName)
+app.get("/api/contact/:id", function(req, res) {
+  var id = req.params.id;
+  console.log(id);
+  db.one("SELECT * FROM salesforce.contact WHERE id = $1", id)
     .then(user => {
       console.log(user);
       res.send(user);
@@ -161,6 +157,43 @@ app.delete("/api/contact/:id", function(req, res) {
   });
 });
 
+
+app.post('/api/account', verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      // res.json ({
+      //   message: "POST Successful.....",
+      //   authData
+      // });
+      console.log(req.body);
+      const name = req.body.name;
+      const phone = req.body.phone;
+      const salutation = req.body.salutation;
+      const title = req.body.title;
+      const createdbyid = req.body.createdbyid;
+      console.log(name, phone, salutation, title, createdbyid);
+      db.one(
+        "INSERT INTO salesforce.account(name, phone, salutation, title, createdbyid) VALUES($1, $2,$3, $4,$5) RETURNING id",
+        [name, phone, salutation, title, createdbyid]
+      )
+        .then(data => {
+          console.log(data);
+          let dataObj = {};
+          dataObj["message"] = "Row inserted successfully";
+          dataObj["rowId"] = data.id;
+          res.send(dataObj);
+        })
+        .catch(error => {
+          console.log(error);
+          res.send(error);
+        });
+    }
+  });
+});
+
 app.get("/api/account", function(req, res) {
     var query = "SELECT * from salesforce.account";
     db.any(query)
@@ -173,52 +206,70 @@ app.get("/api/account", function(req, res) {
       });
 });
 
-/*Retrive Based On ID*/
-app.get("/api/contact/id", function(req, res) {
-  var query = "SELECT * FROM salesforce.contact WHERE id=3";
-  db.any(query)
-    .then(function(data) {
-      res.send(data);
+app.get("/api/account/:id", function(req, res) {
+  var id = req.params.id;
+  console.log(id);
+  db.one("SELECT * FROM salesforce.account WHERE id = $1", id)
+    .then(user => {
+      console.log(user);
+      res.send(user);
     })
-    .catch(function(error) {
+    .catch(error => {
       console.log(error);
-      res.send(error);
+      res.send(error.message);
     });
 });
-app.get("/api/account/id", function(req, res) {
-  var query = "SELECT * FROM salesforce.account WHERE id=4";
-  db.any(query)
-    .then(function(data) {
-      res.send(data);
-    })
-    .catch(function(error) {  
-      console.log(error);
-      res.send(error);
-    });
+app.put("/api/account/:id", function(req, res) {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+        res.sendStatus(403);
+    } else {
+        console.log(req.body);
+        const name = req.body.name;
+        const phone = req.body.phone;
+        const salutation = req.body.salutation;
+        const title = req.body.title;
+        console.log(name, phone, salutation, title);
+        db.none(
+          "update salesforce.account set name=$1, phone=$2, salutation=$3, title=$4 where id=$5",
+          [name, phone, salutation, title, parseInt(req.params.id)]
+        )
+          .then(data => {
+            res.status(200).json({
+              status: "success",
+              message: "Updated account"
+            });
+          })
+          .catch(error => {
+            console.log(error);
+            res.send(error);
+          });
+    }
+  });
 });
 
-/*Delete Query*/ 
-app.delete("/api/account/id", function(req, res) {
-  var query = "SELECT * FROM salesforce.account WHERE id=4";
-  db.any(query)
-    .then(function(data) {
-      res.send(data);
-    })
-    .catch(function(error) {
-      console.log(error);
-      res.send(error);
-    });
-});
-app.delete("/api/contact/id", function(req, res) {
-  var query = "SELECT * FROM salesforce.contact WHERE id=3";
-  db.any(query)
-    .then(function(data) {
-      res.send(data);
-    })
-    .catch(function(error) {
-      console.log(error);
-      res.send(error);
-    });
+app.delete("/api/account/:id", function(req, res) {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      var id = req.params.id;
+      console.log(id);
+      db.result("DELETE FROM salesforce.account WHERE id = $1", id)
+        .then(result => {
+          res.status(200).json({
+            status: "success",
+            message: `Removed ${result.rowCount} account`
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          res.send(error.message);
+        });
+      }
+  });
 });
 
 //Format of TOKEN
