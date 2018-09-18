@@ -71,6 +71,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+
 app.get("/", function(req, res) {
   res.send("Herokuuu");
 });
@@ -245,8 +246,13 @@ app.get("/api/account/:id", verifyToken, (req, res) => {
     }
   });
 });
+<<<<<<< .mine
 
 app.put("/api/account/:id", verifyToken, (req, res) => {
+=======
+
+app.put("/api/account/:id", function(req, res) {
+>>>>>>> .theirs
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
     if (err) {
