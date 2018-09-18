@@ -188,11 +188,11 @@ app.post('/api/account', verifyToken, (req, res) => {
       const phone = req.body.phone;
       const fax = req.body.fax;
       const sicdesc = req.body.sicdesc;
-      const description = req.body.description;
-      console.log(name, phone, fax, sicdesc, description);
+      const shippingcountry = req.body.description;
+      console.log(name, phone, fax, sicdesc, shippingcountry);
       db.one(
-        "INSERT INTO salesforce.account(name, phone, fax, sicdesc, description) VALUES($1, $2,$3, $4,$5) RETURNING id",
-        [name, phone, fax, sicdesc, description]
+        "INSERT INTO salesforce.account(name, phone, fax, sicdesc, shippingcountry) VALUES($1, $2,$3, $4,$5) RETURNING id",
+        [name, phone, fax, sicdesc, shippingcountry]
       )
         .then(data => {
           console.log(data);
@@ -258,11 +258,11 @@ app.put("/api/account/:id", verifyToken, (req, res) => {
         const phone = req.body.phone;
         const fax = req.body.fax;
         const sicdesc = req.body.sicdesc;
-        const description = req.body.description;
-        console.log(name, phone, fax, sicdesc, description);
+        const shippingcountry = req.body.description;
+        console.log(name, phone, fax, sicdesc, shippingcountry);
         db.none(
-          "update salesforce.account set name=$1, phone=$2, fax=$3, title=$4, description=$5 where id=$5",
-          [name, phone, fax, sicdesc, description, parseInt(req.params.id)]
+          "update salesforce.account set name=$1, phone=$2, fax=$3, sicdesc=$4, shippingcountry=$5 where id=$5",
+          [name, phone, fax, sicdesc, shippingcountry, parseInt(req.params.id)]
         )
           .then(data => {
             res.status(200).json({
