@@ -60,9 +60,9 @@ app.post('/api/contact', verifyToken, (req, res) => {
 app.post('/api/login', (req, res) => {
   //Mock User
   const user = {
-    id:1,
-    username:'thanga',
-    email:'thanga@gmail.com'
+    id : req.body.id,
+    username : req.body.username,
+    email : req.body.email
   }
   jwt.sign({user}, 'secretkey', { expiresIn: '2d' }, (err, token) => {
     res.json({
@@ -75,7 +75,12 @@ app.get("/", function(req, res) {
   res.send("Herokuuu");
 });
 
-app.get("/api/contact", function(req, res) {
+app.get("/api/contact", verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+        res.sendStatus(403);
+    } else {
   var query = "SELECT * from salesforce.contact";
   db.any(query)
     .then(function(data) {
@@ -85,9 +90,16 @@ app.get("/api/contact", function(req, res) {
       console.log(error);
       res.send(error);
     });
+  }
+ });
 });
 
-app.get("/api/contact/:firstName", function(req, res) {
+app.get("/api/contact/:firstName", verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+        res.sendStatus(403);
+    } else {
   var firstName = req.params.firstName;
   console.log(firstName);
   db.one("SELECT * FROM salesforce.contact WHERE firstname = $1", firstName)
@@ -99,11 +111,13 @@ app.get("/api/contact/:firstName", function(req, res) {
       console.log(error);
       res.send(error.message);
     });
+   }
+ });
 });
 
 //PUT call to UPDATE contact table
 
-app.put("/api/contact/:id", function(req, res) {
+app.put("/api/contact/:id", verifyToken, (req, res) => {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
     if (err) {
@@ -134,7 +148,7 @@ app.put("/api/contact/:id", function(req, res) {
 });
 
 //DELETE call to delete a row based on the "id"
-app.delete("/api/contact/:id", function(req, res) {
+app.delete("/api/contact/:id", verifyToken, (req, res) => {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
     if (err) {
@@ -194,7 +208,11 @@ app.post('/api/account', verifyToken, (req, res) => {
   });
 });
 
-app.get("/api/account", function(req, res) {
+app.get("/api/account", verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+  } else {
     var query = "SELECT * from salesforce.account";
     db.any(query)
       .then(function(data) {
@@ -204,9 +222,15 @@ app.get("/api/account", function(req, res) {
         console.log(error);
         res.send(error);
       });
+    }
+  });
 });
 
-app.get("/api/account/:id", function(req, res) {
+app.get("/api/account/:id", verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+  } else {
   var id = req.params.id;
   console.log(id);
   db.one("SELECT * FROM salesforce.account WHERE id = $1", id)
@@ -218,8 +242,11 @@ app.get("/api/account/:id", function(req, res) {
       console.log(error);
       res.send(error.message);
     });
+    }
+  });
 });
-app.put("/api/account/:id", function(req, res) {
+
+app.put("/api/account/:id", verifyToken, (req, res) => {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
     if (err) {
@@ -249,7 +276,7 @@ app.put("/api/account/:id", function(req, res) {
   });
 });
 
-app.delete("/api/account/:id", function(req, res) {
+app.delete("/api/account/:id", verifyToken, (req, res) => {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
 
     if (err) {
@@ -270,6 +297,26 @@ app.delete("/api/account/:id", function(req, res) {
         });
       }
   });
+});
+
+//trigger log 
+app.get("/api/trigger", verifyToken, (req, res) => {
+  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+    if (err) {
+        res.sendStatus(403);
+    } else {
+  var query = "SELECT * from salesforce._trigger_log";
+  db.any(query)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(error) {
+      console.log(error);
+      res.send(error);
+    });
+  }
+ });
 });
 
 //Format of TOKEN
